@@ -40,4 +40,38 @@
       (list n))
     (list (list n))))
 
-(permutations 4)
+(permutations 3)
+
+
+;; helper functions for Luhn's algorithm
+(defn map-every-nth [f n coll]
+  (map-indexed #(if (zero? (mod (inc %1) n)) (f %2) %2) coll))
+
+(defn rev [f]
+  ""
+  (fn [a b] (f b a)))
+
+(defn luhn [n]
+  "This is an algorithm used to validate ID numbers like credit card numbers.
+   This is mainly used to check for errors in entries"
+  (->> n
+       str
+       ((rev string/split) #"")
+       rest
+       (map js/parseInt)
+       (map-every-nth #(* % 2) 2)
+       (map
+         #(if (> % 9)
+           (->> %
+             str
+             ((rev string/split) #"")
+             rest
+             (map js/parseInt)
+             (reduce +))
+           %))
+       (reduce +)
+       ((rev mod) 10)
+       (= 0)
+       ))
+
+(luhn 79927398713)
