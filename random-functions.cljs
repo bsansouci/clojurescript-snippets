@@ -44,11 +44,8 @@
 
 
 ;; helper functions for Luhn's algorithm
-(defn map-every-nth [f n coll]
-  (map-indexed #(if (zero? (mod (inc %1) n)) (f %2) %2) coll))
-
 (defn rev [f]
-  ""
+  "This is used to reverse the arguments"
   (fn [a b] (f b a)))
 
 (defn luhn [n]
@@ -59,7 +56,11 @@
        ((rev string/split) #"")
        rest
        (map js/parseInt)
-       (map-every-nth #(* % 2) 2)
+       (map-indexed
+        #(if (zero? (mod (inc %1) 2))
+          (* %2 2)
+         %2))
+       (map-every-nth  2)
        (map
          #(if (> % 9)
            (->> %
@@ -71,7 +72,7 @@
            %))
        (reduce +)
        ((rev mod) 10)
-       (= 0)
+       zero?
        ))
 
 (luhn 79927398713)
