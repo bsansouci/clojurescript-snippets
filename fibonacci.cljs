@@ -31,4 +31,10 @@
 
 (fibs 6)
 
-
+; Looking through some documentation about lazy sequences, I found this really nice solution
+(def fibs
+  (lazy-cat
+   [0 1]
+   (map +
+        fibs
+        (rest fibs))))
