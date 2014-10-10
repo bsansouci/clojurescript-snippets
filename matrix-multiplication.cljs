@@ -12,7 +12,7 @@
 (defn mmult [a b]
   (cond (empty? a) nil
         (not= (count (first a)) (count b)) nil
-        :else (map (fn [x1] (map (fn [x2] (apply + (map * x1 x2))) a))
+        :else (map (fn [col] (map (fn [row] (apply + (map * col row))) a))
                    (transpose b))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

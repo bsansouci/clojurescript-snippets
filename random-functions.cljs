@@ -159,3 +159,22 @@
   (fibs2_helper n [1 1]))
 (last [1 2 3 4])
 (fibs2 7)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Function from (x, y) -> n
+; such that n is a number in this matrix
+;   y-->
+; x  |0|1|2|3 |...
+; | 0|1 3 6 10
+; v 1|2 5 9
+;   2|4 8
+;   3|7
+;
+
+(defn getSomeNumber [x y]
+  (+ y (let [n (+ x y)]
+         (-> n (+ 1) (* n) (quot 2) (+ 1)))))
+
+(getSomeNumber 2 1)
