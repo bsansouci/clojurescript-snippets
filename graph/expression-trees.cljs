@@ -66,25 +66,17 @@
 ; the data properly.
 (def toString evaluate)
 
-; Let's forget even more that we're doing operations on things that we don't know
-(def old+ +)
-
-(defn + [exp1 exp2]
-  (if-not (or (nil? (:value exp1))
-              (nil? (:value exp2))) (++ exp1 exp2)
-    (old+ exp1 exp2)))
-
 ; we still have our good old addition
 (+ 1 1)
 
 ; and we have our own addition
-(toString (+ two two))
+(toString (++ two two))
 
 
 ; One last change that I just thought of. In clojure we get the freedom to have functions that work on an
 ; undefined number of arguments, so we shouldn't limit ourselves to 2.
 (def tree3 {:children [{:value 1} {:value 2}]
-            :value old+})
+            :value +})
 
 ; Simple reimplementation of depth-first-search from above
 (defn depth-first-evaluation2 [t]
@@ -104,36 +96,28 @@
   (fn [& args]
     {:children args
      :value operator}))
-(def old++ ++)
 
 ; Let's not forget that we redefined + to be something else, so we have to use the old definition
-(def ++ (expressionify old+))
+(def +++ (expressionify +))
 
 ; We need to define what our objects are, so we can delegate to ++ if the given arguments are our objects
 ; or to old+ if not
 (defn is-our-objects [n]
   (not (nil? (:value n))))
 
-(defn + [& args]
-  (if (every? is-our-objects args) (apply ++ args)
-    (apply old+ args)))
-
 ; So this works
-(toString (+ tree3 tree3 tree3 tree3))
-
-; And this works too! Hurray!
-(+ 1 2 3 4 5)
+(toString (+++ tree3 tree3 tree3 tree3))
 
 ; Now let's try something interesting
 (def one {:value 1})
 
-(def old-inc inc)
-
-(defn inc [v]
+(defn increment [v]
   (if (is-our-objects v) (+ v {:value 1})
     (+ v 1)))
 
-(toString (inc tree3))
+(toString (increment tree3))
 
-(map inc (repeat one))
+(take 5 (repeat one))
+
+(map increment (repeat one))
 
