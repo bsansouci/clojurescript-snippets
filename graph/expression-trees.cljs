@@ -56,7 +56,6 @@
       :value operator}))
 
 ; now we can go back to the old definition of + and definie our own
-
 (def ++ (expressionify +))
 
 (evaluate (++ two two))
@@ -112,12 +111,42 @@
 (def one {:value 1})
 
 (defn increment [v]
-  (if (is-our-objects v) (+ v {:value 1})
+  (if (is-our-objects v) (+++ v {:value 1})
     (+ v 1)))
 
-(toString (increment tree3))
+(toString (increment one))
 
-(take 5 (repeat one))
+(toString (apply +++ (take 5 (repeat one))))
 
-(map increment (repeat one))
+(defn sequence-from-deep [n f1 f2]
+  (lazy-cat [n] (sequence-from (f1 n) (f2 f1) f2)))
 
+(defn sequence-from [n f]
+  (lazy-cat [n] (sequence-from (f n) f)))
+
+; Now we can define natural numbers like so
+(def nats (sequence-from 1 increment))
+
+; Or like so
+(def nats (sequence-from one increment))
+
+(apply +++ (take 10 nats))
+
+; Naive implementation of equality check that performs a breadth first search
+; on a tree
+(defn is-equal-helper [col1 col2]
+  (cond
+   (and (empty? col1) (empty? col2)) :true
+   (or (empty? col1) (empty? col2)) :false
+   (not (every? identity (map #(= (:value %1) (:value %2)) col1 col2))) :false
+   :else (is-equal-helper
+          (filter identity (flatten (map :children col1)))
+          (filter identity (flatten (map :children col2))))))
+
+(defn is-equal [t1 t2]
+  (is-equal-helper [t1] [t2]))
+
+; Now the problem is that expression trees aren't necessarily similar, but
+; represent math that will give the same result. So we need a way to reduce
+; an expression tree such that two trees yielding the same result will be
+; represented the same way.
