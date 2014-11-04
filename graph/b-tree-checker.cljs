@@ -46,5 +46,9 @@
   (and (every? identity (map b-tree-check-level t))
        (every? identity (map b-tree-check (concat (filter #(:left %) t)
                                                   (filter #(:right %) t))))))
-
 (b-tree-check b-tree)
+
+(defn find-where-to-insert [t n]
+  (:right (last (filter #(<= (:val %) n) t))))
+
+(find-where-to-insert b-tree 4)
